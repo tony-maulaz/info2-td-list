@@ -55,6 +55,22 @@ typedef struct
 // Fonctions de base
 void append(List* list, int value)
 {
+    if(list == NULL || list->head == NULL) exit(1);
+
+    // Création du nouveau noeud
+    Node* new_node = malloc(sizeof(Node));
+    new_node->next = NULL;
+    new_node->value = value;
+
+    // La liste est vide
+    if(list->head == NULL){
+        list->head = new_node;
+    }
+    else{
+        list->tail->next = new_node;
+    }
+
+    list->tail = new_node;
 }
 
 void free_list(List* list)
@@ -63,10 +79,30 @@ void free_list(List* list)
 
 void print_list(const List* list)
 {
+    Node* current = list->head;
+    printf("Liste :");
+    while(current != NULL){
+        printf(" %d", current->value);
+        if(current->next != NULL)
+            printf(" ->");
+        current = current->next;
+    }
 }
 
 void reverse_list(List* list)
 {
+    Node* prev = NULL;
+    Node* current = list->head;
+    Node* next = NULL;
+    list->tail = list->head;
+    while (current)
+    {
+        next = current->next;
+        current->next = prev;
+        prev = current;
+        current = next;
+    }
+    list->head = prev;
 }
 
 int sum_list(const List* list)
@@ -76,7 +112,22 @@ int sum_list(const List* list)
 
 int min_list(const List* list)
 {
-    return 0;
+    if (!list->head) return 0;
+    
+    int min = list->head->value;
+    
+    Node* current = list->head;
+    while(current != NULL){
+        if(min > current->value)
+            min = current->value;
+        current = current->next;
+    }
+
+    //for (Node* cur = list->head; cur; cur = cur->next)
+    //    if (cur->value < min) 
+    //        min = cur->value;
+
+    return min;
 }
 
 int max_list(const List* list)
@@ -86,6 +137,7 @@ int max_list(const List* list)
 
 void filter_list(List* list, int threshold)
 {
+
 }
 
 void help()
@@ -130,7 +182,31 @@ int main(int argc, char* argv[])
     init_file();
     // ---------------
 
-    if(argc < 2) return 1;
-    
+    bool option_add = false;
+    bool option_filter = false;
+    int value_filter = 0;
+
+    if( argc < 2 ) return 1;
+
+    for(int i=0; i<argc; i++){
+        if( strcmp(argv[i], "--add") == 0 )
+            option_add = true;
+        else if(strcmp(argv[i], "--help")){
+            help();
+            return 0;
+        }
+        else if( strcmp(argv[i], "--filter") == 0 ){
+            if(sscanf(argv[i], "--filter%d", &value_filter) == 1){
+                option_filter = true;
+            }
+            else{
+                return 1;
+            }
+        }
+        else{
+
+        }
+    }
+
     return 0;
 }
